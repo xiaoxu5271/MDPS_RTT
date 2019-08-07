@@ -14,6 +14,7 @@
 #include <board.h>
 
 #include "fal.h"
+#include "wlan_app.h"
 
 /* defined the LED0 pin: PF9 */
 #define LED0_PIN GET_PIN(F, 0)
@@ -30,7 +31,13 @@ int main(void)
     rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);
     rt_pin_mode(LED2_PIN, PIN_MODE_OUTPUT);
 
+    rt_pin_write(LED0_PIN, PIN_HIGH);
+    rt_pin_write(LED1_PIN, PIN_HIGH);
+    rt_pin_write(LED2_PIN, PIN_HIGH);
+
     fal_init();
+    wifi_connect();
+    // rt_wlan_config_autoreconnect(RT_TRUE); //开启自动重连
     rt_kprintf("The current version of APP firmware is %s\n", APP_VERSION);
 
     while (count++)
@@ -38,7 +45,7 @@ int main(void)
         rt_pin_write(LED0_PIN, PIN_LOW);
         rt_pin_write(LED1_PIN, PIN_LOW);
         rt_pin_write(LED2_PIN, PIN_LOW);
-        rt_thread_mdelay(50);
+        rt_thread_mdelay(1);
         rt_pin_write(LED0_PIN, PIN_HIGH);
         rt_pin_write(LED1_PIN, PIN_HIGH);
         rt_pin_write(LED2_PIN, PIN_HIGH);
