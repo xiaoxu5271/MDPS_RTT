@@ -15,6 +15,8 @@
 
 #include "fal.h"
 #include "wlan_app.h"
+#include "dw1000_usr.h"
+#include "drv_usr.h"
 
 /* defined the LED0 pin: PF9 */
 #define LED0_PIN GET_PIN(F, 0)
@@ -36,7 +38,9 @@ int main(void)
     rt_pin_write(LED2_PIN, PIN_HIGH);
 
     fal_init();
-    wifi_connect();
+    // DW1000_init();
+    //wifi_connect();
+    run_dw1000_task();
     // rt_wlan_config_autoreconnect(RT_TRUE); //开启自动重连
     rt_kprintf("The current version of APP firmware is %s\n", APP_VERSION);
 

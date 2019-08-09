@@ -2,7 +2,7 @@
   FileVersion = 2
 [GENERAL]
   ConnectMode = 0
-  CurrentFile = "D:\CloudForce\MDPS_RTT\Bootload\rt-boot-2019-08-02 175304\build\rtboot_f4.bin"
+  CurrentFile = "D:\CloudForce\MDPS_RTT\MDPS_RTT\Bootload\rt-boot-2019-08-02 175304\build\rtboot_f4.bin"
   DataFileSAddr = 0x08000000
   GUIMode = 0
   HostName = ""

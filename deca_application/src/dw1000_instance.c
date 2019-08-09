@@ -221,7 +221,7 @@ uint8 anctxorrxreenable(uint16 sourceAddress, int ancToAncTWR)
       type_pend = DWT_SIG_TX_PENDING ; // exit this interrupt and notify the application/instance that TX is in progress.
       instance_data.timeofTx = sys_Tick;
       instance_data.monitor = 1;
-      //printf("send ok\r\n");
+      // printf("send ok\r\n");
     }
   }
   else //stay in receive
