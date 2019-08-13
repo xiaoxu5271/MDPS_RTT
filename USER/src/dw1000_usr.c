@@ -512,177 +512,229 @@ static void print_task(void *p)
     UartMsgStruct p_Msg;
     uint32_t len;
     message_mdps_t msg_send;
+    char s_addr_tem[4];
+    char d_addr_tem[4];
+    char rx_time_tem[15];
     while (1)
     {
         /* 从队列中获取内容 */
         if (rt_mq_recv(&message_print, &p_Msg, sizeof(p_Msg), RT_WAITING_FOREVER) == RT_EOK)
         {
-            switch (p_Msg.msg_type)
-            {
-            case HOST_ANCHOR_SYNC:
-            {
-                rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"t\":\"%02x%08x\"}\n\r", HOST_ANCHOR_SYNC, p_Msg.sec_num, p_Msg.s_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0]);
-                //sprintf(buffer, "{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"t\":\"%02x%08x\"}\n\r",HOST_ANCHOR_SYNC,p_Msg.sec_num,p_Msg.s_addr,(uint8_t)p_Msg.rx_time[1],p_Msg.rx_time[0]);
-                //pack send message
-                msg_send.len = sprintf(msg_send.buf, "{\"data\":\"{\\\"p\\\":%d,\\\"n\\\":%d,\\\"s\\\":\\\"%04x\\\",\\\"t\\\":\\\"%02x%08x\\\"}\"}\n\r", HOST_ANCHOR_SYNC, p_Msg.sec_num, p_Msg.s_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0]);
+            // {
+            //     memset(s_addr_tem, 0, sizeof(s_addr_tem));
+            //     memset(d_addr_tem, 0, sizeof(d_addr_tem));
+            //     memset(rx_time_tem, 0, sizeof(rx_time_tem));
+            //     snprintf(s_addr_tem, sizeof(s_addr_tem), "%04x", p_Msg.s_addr);
+            //     snprintf(d_addr_tem, sizeof(d_addr_tem), "%04x", p_Msg.d_addr);
+            //     snprintf(rx_time_tem, sizeof(rx_time_tem), "%02x%08x", (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0]);
+            //     // cJSON *root = cJSON_CreateObject();
+            //     // if (!root)
+            //     // {
+            //     //     rt_kprintf("No memory for cJSON root!\n");
+            //     //     return;
+            //     // }
+            //     cJSON *data = cJSON_CreateObject();
+            //     if (!data)
+            //     {
+            //         rt_kprintf("No memory for cJSON data!\n");
+            //         cJSON_Delete(data);
+            //         continue;
+            //         // return;
+            //     }
+            //     cJSON_AddNumberToObject(data, "p", p_Msg.msg_type);
+            //     cJSON_AddNumberToObject(data, "n", p_Msg.sec_num);
+            //     cJSON_AddStringToObject(data, "s", s_addr_tem);
+            //     cJSON_AddStringToObject(data, "d", d_addr_tem);
+            //     cJSON_AddStringToObject(data, "t", rx_time_tem);
+            //     cJSON_AddNumberToObject(data, "r", p_Msg.rssi_val);
 
-                rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
-                break;
-            }
-            case SLAVE_ANCHOR_SYNC:
-            {
-                rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"d\":\"%04x\",\"t\":\"%02x%08x\",\"r\":%d}\n\r", SLAVE_ANCHOR_SYNC, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0], p_Msg.rssi_val);
-                //pack send message
-                msg_send.len = sprintf(msg_send.buf, "{\"data\":\"{\\\"p\\\":%d,\\\"n\\\":%d,\\\"s\\\":\\\"%04x\\\",\\\"d\\\":\\\"%04x\\\",\\\"t\\\":\\\"%02x%08x\\\",\\\"r\\\":%d}\"}\n\r", SLAVE_ANCHOR_SYNC, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0], p_Msg.rssi_val);
-                rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
-                break;
-            }
-            case TAG_BORADCAST:
-            {
-                rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"d\":\"%04x\",\"t\":\"%02x%08x\",\"r\":%d,\"msg\":\"%s\"}\n\r", TAG_BORADCAST, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0], p_Msg.rssi_val, p_Msg.msg_buf);
-                //pack send message
-                msg_send.len = sprintf(msg_send.buf, "{\"data\":\"{\\\"p\\\":%d,\\\"n\\\":%d,\\\"s\\\":\\\"%04x\\\",\\\"d\\\":\\\"%04x\\\",\\\"t\\\":\\\"%02x%08x\\\",\\\"r\\\":%d,\\\"msg\\\":\\\"%s\\\"}\",\\\"lastno\\\":\"{\\\"%04x\\\":\"%d\"}\"}\n\r", TAG_BORADCAST, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0], p_Msg.rssi_val, p_Msg.msg_buf, p_Msg.sec_num, p_Msg.s_addr, p_Msg.sec_num);
-#if 0
-				cJSON* root = cJSON_CreateObject();
-				if(!root){
-					rt_kprintf("CreateObject root err\r\n");
-					break;
-				}
-				cJSON* data = cJSON_CreateObject();
-				if(!data){
-					rt_kprintf("CreateObject data err\r\n");
-					cJSON_Delete(root);
-					break;
-				}
-				cJSON_AddNumberToObject(data, "p", TAG_BORADCAST);
-			    cJSON_AddNumberToObject(data, "n", p_Msg.sec_num);
-				cJSON_AddNumberToObject(data, "s", p_Msg.s_addr);
-				cJSON_AddNumberToObject(data, "d", p_Msg.d_addr);
-				cJSON_AddNumberToObject(data, "t", (uint16_t)p_Msg.rx_time[1]<<8|p_Msg.rx_time[0]);
-				cJSON_AddNumberToObject(data, "r", p_Msg.rssi_val);
-				cJSON_AddStringToObject(data, "msg", p_Msg.msg_buf);
-				
-				cJSON*  lastno = cJSON_CreateObject();
-				if(!lastno){
-					rt_kprintf("CreateObject data lastno\r\n");
-					cJSON_Delete(data);
-					cJSON_Delete(root);
-					break;
-				}
-				cJSON_AddNumberToObject(lastno, "s_addr", p_Msg.sec_num);
+            //     // cJSON_AddItemToObject(root, "data", data);
+            //     // if (root == RT_NULL)
+            //     // {
+            //     //     rt_kprintf("root null\n");
+            //     // }
+            //     char *datas; //= cJSON_PrintUnformatted(root);
+            //     datas = (char *)rt_malloc(256);
+            //     strcpy(datas, cJSON_PrintUnformatted(data));
+            //     cJSON_Delete(data);
+            //     rt_memcpy(msg_send.buf, datas, sizeof(msg_send.buf));
 
-				char* temp  = cJSON_PrintUnformatted(data);
-				if(!temp){
-					rt_kprintf("temp data* temp\r\n");
-					
-					cJSON_Delete(data);
-					cJSON_Delete(root);
-					break;
-				}
-				cJSON_AddStringToObject(root,"data",(const char *)temp);
-				if (!temp) 
-				{
-					rt_free(temp);
- 				}
-				
-				cJSON_AddItemToObject(root,"lastno",lastno);
-				
-				//char* datas = cJSON_Print(root);
-				//rt_kprintf("%s\n", datas);
-				char* datas = cJSON_PrintUnformatted(root);
+            //     rt_free(datas);
+            //     datas = RT_NULL;
 
-				//rt_kprintf("%s\n", datas);
-				strcpy(msg_send.buf,datas);
-				msg_send.len = 	strlen(msg_send.buf);
-				//cJSON_Delete(data);
-				//cJSON_Delete(lastno);
-				cJSON_Delete(root);
-				
-				
-				if (!datas) 
-				{
-					rt_free(datas);
- 				}
-#endif
-                rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
-                break;
-            }
-            case TOF_RANGING:
-            {
-                rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"d\":\"%04x\",\"l\":%d,\"r\":%d,\"msg\":\"%s\"}\n\r", TOF_RANGING, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, p_Msg.distance_val, p_Msg.rssi_val, p_Msg.msg_buf);
-                //pack send message
-                msg_send.len = sprintf(msg_send.buf, "{\"data\":\"{\\\"p\\\":%d,\\\"n\\\":%d,\\\"s\\\":\\\"%04x\\\",\\\"d\\\":\\\"%04x\\\",\\\"l\\\":%d,\\\"r\\\":%d,\\\"msg\\\":\\\"%s\\\"}\"}\n\r", TOF_RANGING, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, p_Msg.distance_val, p_Msg.rssi_val, p_Msg.msg_buf);
-#if 0
-				cJSON* root = cJSON_CreateObject();
-				
-				if(root == NULL){
-					rt_kprintf("CreateObject root err\r\n");
-					return;
-				}
-				cJSON* data = cJSON_CreateObject();
-				if(root == NULL){
-					rt_kprintf("CreateObject data err\r\n");
-					cJSON_Delete(root);
-					return;
-				}
-				cJSON_AddNumberToObject(data, "p", TAG_BORADCAST);
-			    cJSON_AddNumberToObject(data, "n", p_Msg.sec_num);
-				cJSON_AddNumberToObject(data, "s", p_Msg.s_addr);
-				cJSON_AddNumberToObject(data, "d", p_Msg.d_addr);
-				cJSON_AddNumberToObject(data, "t", (uint16_t)p_Msg.rx_time[1]<<8|p_Msg.rx_time[0]);
-				cJSON_AddNumberToObject(data, "r", p_Msg.rssi_val);
-				cJSON_AddStringToObject(data, "msg", p_Msg.msg_buf);
+            //     rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
+            //     rt_kprintf("msg_send:%s\n", msg_send.buf);
+            //     // rt_kprintf("%s\n", datas);
+            // }
 
-				char* temp  = cJSON_PrintUnformatted(data);
-				if(temp == NULL){
-					rt_kprintf("3 temp data* temp\r\n");
-					
-					cJSON_Delete(data);
-					cJSON_Delete(root);
-					break;
-				}
-				cJSON_AddStringToObject(root,"data",(const char *)temp);
-				if (temp != NULL) 
-				{
-					rt_free(temp);
- 				}
-				//cJSON_AddItemToObject(root,"data",data);		
-				//char* datas = cJSON_Print(root);
-				//rt_kprintf("%s\n", datas);
-				char* datas = cJSON_PrintUnformatted(root);
-				//rt_kprintf("%s\n", datas);
-				strcpy(msg_send.buf,datas);
-				msg_send.len = 	strlen(msg_send.buf);
-				//cJSON_Delete(data);
-				cJSON_Delete(root);
-				if (datas != NULL) 
-				{
-					rt_free(datas);
- 				}
-#endif
+            // rt_kprintf("rt_mq_recv message_print\n");
 
-                rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
-                break;
-            }
-            case ANCHOR_RANGING:
-            {
-                rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"d\":\"%04x\",\"l\":%d,\"r\":%d,\"msg\":\"%s\"}\n\r", ANCHOR_RANGING, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, p_Msg.distance_val, p_Msg.rssi_val, p_Msg.msg_buf);
-                //pack send message
-                msg_send.len = sprintf(msg_send.buf, "{\"data\":\"{\\\"p\\\":%d,\\\"n\\\":%d,\\\"s\\\":\\\"%04x\\\",\\\"d\\\":\\\"%04x\\\",\\\"l\\\":%d,\\\"r\\\":%d,\\\"msg\\\":\\\"%s\\\"}\"}\n\r", ANCHOR_RANGING, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, p_Msg.distance_val, p_Msg.rssi_val, p_Msg.msg_buf);
-                rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
-                break;
-            }
-#ifdef TIME_STAMP_DEBUG
-            case ANCHOR_TIMESTAMP_DEBUG:
-            {
-                rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"d\":\"%04x\",\"tp\":\"%02x%08x\",\"pr\":\"%02x%08x\",\"at\":\"%02x%08x\",\"tr\":\"%02x%08x\",\"tf\":\"%02x%08x\"}\n\r", ANCHOR_TIMESTAMP_DEBUG, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, (uint8_t)p_Msg.tag_poll_time[1], p_Msg.tag_poll_time[0], (uint8_t)p_Msg.poll_rx_time[1], p_Msg.poll_rx_time[0], (uint8_t)p_Msg.anchor_tx_time[1], p_Msg.anchor_tx_time[0], (uint8_t)p_Msg.tag_rx_time[1], p_Msg.tag_rx_time[0], (uint8_t)p_Msg.tag_final_time[1], p_Msg.tag_final_time[0]);
-            }
-#endif
-            default:
-            {
-                break;
-            }
-            }
+            //             switch (p_Msg.msg_type)
+            //             {
+            //             case HOST_ANCHOR_SYNC:
+            //             {
+            //                 // rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"t\":\"%02x%08x\"}\n\r", HOST_ANCHOR_SYNC, p_Msg.sec_num, p_Msg.s_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0]);
+            //                 //sprintf(buffer, "{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"t\":\"%02x%08x\"}\n\r",HOST_ANCHOR_SYNC,p_Msg.sec_num,p_Msg.s_addr,(uint8_t)p_Msg.rx_time[1],p_Msg.rx_time[0]);
+            //                 //pack send message
+            //                 msg_send.len = sprintf(msg_send.buf, "{\"data\":\"{\\\"p\\\":%d,\\\"n\\\":%d,\\\"s\\\":\\\"%04x\\\",\\\"t\\\":\\\"%02x%08x\\\"}\"}\n\r", HOST_ANCHOR_SYNC, p_Msg.sec_num, p_Msg.s_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0]);
+
+            //                 rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
+            //                 break;
+            //             }
+            //             case SLAVE_ANCHOR_SYNC:
+            //             {
+            //                 // rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"d\":\"%04x\",\"t\":\"%02x%08x\",\"r\":%d}\n\r", SLAVE_ANCHOR_SYNC, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0], p_Msg.rssi_val);
+            //                 //pack send message
+            //                 // strcpy(pdst, datas);
+            //                 // msg_send.len = sprintf(msg_send.buf, "{\"data\":\"{\\\"p\\\":%d,\\\"n\\\":%d,\\\"s\\\":\\\"%04x\\\",\\\"d\\\":\\\"%04x\\\",\\\"t\\\":\\\"%02x%08x\\\",\\\"r\\\":%d}\"}\n\r", SLAVE_ANCHOR_SYNC, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0], p_Msg.rssi_val);
+            //                 rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
+            //                 break;
+            //             }
+            //             case TAG_BORADCAST:
+            //             {
+            //                 // rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"d\":\"%04x\",\"t\":\"%02x%08x\",\"r\":%d,\"msg\":\"%s\"}\n\r", TAG_BORADCAST, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0], p_Msg.rssi_val, p_Msg.msg_buf);
+            //                 //pack send message
+            //                 msg_send.len = sprintf(msg_send.buf, "{\"data\":\"{\\\"p\\\":%d,\\\"n\\\":%d,\\\"s\\\":\\\"%04x\\\",\\\"d\\\":\\\"%04x\\\",\\\"t\\\":\\\"%02x%08x\\\",\\\"r\\\":%d,\\\"msg\\\":\\\"%s\\\"}\",\\\"lastno\\\":\"{\\\"%04x\\\":\"%d\"}\"}\n\r", TAG_BORADCAST, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0], p_Msg.rssi_val, p_Msg.msg_buf, p_Msg.sec_num, p_Msg.s_addr, p_Msg.sec_num);
+            // #if 0
+            //             				cJSON* root = cJSON_CreateObject();
+            //             				if(!root){
+            //             					rt_kprintf("CreateObject root err\r\n");
+            //             					break;
+            //             				}
+            //             				cJSON* data = cJSON_CreateObject();
+            //             				if(!data){
+            //             					rt_kprintf("CreateObject data err\r\n");
+            //             					cJSON_Delete(root);
+            //             					break;
+            //             				}
+            //             				cJSON_AddNumberToObject(data, "p", TAG_BORADCAST);
+            //             			    cJSON_AddNumberToObject(data, "n", p_Msg.sec_num);
+            //             				cJSON_AddNumberToObject(data, "s", p_Msg.s_addr);
+            //             				cJSON_AddNumberToObject(data, "d", p_Msg.d_addr);
+            //             				cJSON_AddNumberToObject(data, "t", (uint16_t)p_Msg.rx_time[1]<<8|p_Msg.rx_time[0]);
+            //             				cJSON_AddNumberToObject(data, "r", p_Msg.rssi_val);
+            //             				cJSON_AddStringToObject(data, "msg", p_Msg.msg_buf);
+
+            //             				cJSON*  lastno = cJSON_CreateObject();
+            //             				if(!lastno){
+            //             					rt_kprintf("CreateObject data lastno\r\n");
+            //             					cJSON_Delete(data);
+            //             					cJSON_Delete(root);
+            //             					break;
+            //             				}
+            //             				cJSON_AddNumberToObject(lastno, "s_addr", p_Msg.sec_num);
+
+            //             				char* temp  = cJSON_PrintUnformatted(data);
+            //             				if(!temp){
+            //             					rt_kprintf("temp data* temp\r\n");
+
+            //             					cJSON_Delete(data);
+            //             					cJSON_Delete(root);
+            //             					break;
+            //             				}
+            //             				cJSON_AddStringToObject(root,"data",(const char *)temp);
+            //             				if (!temp)
+            //             				{
+            //             					rt_free(temp);
+            //              				}
+
+            //             				cJSON_AddItemToObject(root,"lastno",lastno);
+
+            //             				//char* datas = cJSON_Print(root);
+            //             				//rt_kprintf("%s\n", datas);
+            //             				char* datas = cJSON_PrintUnformatted(root);
+
+            //             				//rt_kprintf("%s\n", datas);
+            //             				strcpy(msg_send.buf,datas);
+            //             				msg_send.len = 	strlen(msg_send.buf);
+            //             				//cJSON_Delete(data);
+            //             				//cJSON_Delete(lastno);
+            //             				cJSON_Delete(root);
+
+            //             				if (!datas)
+            //             				{
+            //             					rt_free(datas);
+            //              				}
+            // #endif
+            //                 rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
+            //                 break;
+            //             }
+            //             case TOF_RANGING:
+            //             {
+            //                 // rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"d\":\"%04x\",\"l\":%d,\"r\":%d,\"msg\":\"%s\"}\n\r", TOF_RANGING, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, p_Msg.distance_val, p_Msg.rssi_val, p_Msg.msg_buf);
+            //                 //pack send message
+            //                 msg_send.len = sprintf(msg_send.buf, "{\"data\":\"{\\\"p\\\":%d,\\\"n\\\":%d,\\\"s\\\":\\\"%04x\\\",\\\"d\\\":\\\"%04x\\\",\\\"l\\\":%d,\\\"r\\\":%d,\\\"msg\\\":\\\"%s\\\"}\"}\n\r", TOF_RANGING, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, p_Msg.distance_val, p_Msg.rssi_val, p_Msg.msg_buf);
+            // #if 0
+            //             				cJSON* root = cJSON_CreateObject();
+
+            //             				if(root == NULL){
+            //             					rt_kprintf("CreateObject root err\r\n");
+            //             					return;
+            //             				}
+            //             				cJSON* data = cJSON_CreateObject();
+            //             				if(root == NULL){
+            //             					rt_kprintf("CreateObject data err\r\n");
+            //             					cJSON_Delete(root);
+            //             					return;
+            //             				}
+            //             				cJSON_AddNumberToObject(data, "p", TAG_BORADCAST);
+            //             			    cJSON_AddNumberToObject(data, "n", p_Msg.sec_num);
+            //             				cJSON_AddNumberToObject(data, "s", p_Msg.s_addr);
+            //             				cJSON_AddNumberToObject(data, "d", p_Msg.d_addr);
+            //             				cJSON_AddNumberToObject(data, "t", (uint16_t)p_Msg.rx_time[1]<<8|p_Msg.rx_time[0]);
+            //             				cJSON_AddNumberToObject(data, "r", p_Msg.rssi_val);
+            //             				cJSON_AddStringToObject(data, "msg", p_Msg.msg_buf);
+
+            //             				char* temp  = cJSON_PrintUnformatted(data);
+            //             				if(temp == NULL){
+            //             					rt_kprintf("3 temp data* temp\r\n");
+
+            //             					cJSON_Delete(data);
+            //             					cJSON_Delete(root);
+            //             					break;
+            //             				}
+            //             				cJSON_AddStringToObject(root,"data",(const char *)temp);
+            //             				if (temp != NULL)
+            //             				{
+            //             					rt_free(temp);
+            //              				}
+            //             				//cJSON_AddItemToObject(root,"data",data);
+            //             				//char* datas = cJSON_Print(root);
+            //             				//rt_kprintf("%s\n", datas);
+            //             				char* datas = cJSON_PrintUnformatted(root);
+            //             				//rt_kprintf("%s\n", datas);
+            //             				strcpy(msg_send.buf,datas);
+            //             				msg_send.len = 	strlen(msg_send.buf);
+            //             				//cJSON_Delete(data);
+            //             				cJSON_Delete(root);
+            //             				if (datas != NULL)
+            //             				{
+            //             					rt_free(datas);
+            //              				}
+            // #endif
+
+            //                 rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
+            //                 break;
+            //             }
+            //             case ANCHOR_RANGING:
+            //             {
+            //                 // rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"d\":\"%04x\",\"l\":%d,\"r\":%d,\"msg\":\"%s\"}\n\r", ANCHOR_RANGING, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, p_Msg.distance_val, p_Msg.rssi_val, p_Msg.msg_buf);
+            //                 //pack send message
+            //                 msg_send.len = sprintf(msg_send.buf, "{\"data\":\"{\\\"p\\\":%d,\\\"n\\\":%d,\\\"s\\\":\\\"%04x\\\",\\\"d\\\":\\\"%04x\\\",\\\"l\\\":%d,\\\"r\\\":%d,\\\"msg\\\":\\\"%s\\\"}\"}\n\r", ANCHOR_RANGING, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, p_Msg.distance_val, p_Msg.rssi_val, p_Msg.msg_buf);
+            //                 rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
+            //                 break;
+            //             }
+            // #ifdef TIME_STAMP_DEBUG
+            //             case ANCHOR_TIMESTAMP_DEBUG:
+            //             {
+            //                 rt_kprintf("{\"p\":%d,\"n\":%d,\"s\":\"%04x\",\"d\":\"%04x\",\"tp\":\"%02x%08x\",\"pr\":\"%02x%08x\",\"at\":\"%02x%08x\",\"tr\":\"%02x%08x\",\"tf\":\"%02x%08x\"}\n\r", ANCHOR_TIMESTAMP_DEBUG, p_Msg.sec_num, p_Msg.s_addr, p_Msg.d_addr, (uint8_t)p_Msg.tag_poll_time[1], p_Msg.tag_poll_time[0], (uint8_t)p_Msg.poll_rx_time[1], p_Msg.poll_rx_time[0], (uint8_t)p_Msg.anchor_tx_time[1], p_Msg.anchor_tx_time[0], (uint8_t)p_Msg.tag_rx_time[1], p_Msg.tag_rx_time[0], (uint8_t)p_Msg.tag_final_time[1], p_Msg.tag_final_time[0]);
+            //             }
+            // #endif
+            //             default:
+            //             {
+            //                 break;
+            //             }
+            //             }
         }
     }
 }
@@ -764,14 +816,14 @@ void run_dw1000_task(void)
     if (tid1 != RT_NULL)
         rt_thread_startup(tid1);
 
-    //xTaskCreate(print_data_task, "print_data_task", 1024*8, NULL, 1, NULL);
-    tid1 = rt_thread_create("print_data_task",
-                            print_data_task, RT_NULL,
-                            1024,
-                            0, 20);
+        //xTaskCreate(print_data_task, "print_data_task", 1024*8, NULL, 1, NULL);
+        // tid1 = rt_thread_create("print_data_task",
+        //                         print_data_task, RT_NULL,
+        //                         1024,
+        //                         0, 20);
 
-    if (tid1 != RT_NULL)
-        rt_thread_startup(tid1);
+        // if (tid1 != RT_NULL)
+        //     rt_thread_startup(tid1);
 
 #endif
     //xTaskCreate(dw1000_irq_task, "dw1000_irq_task", 1024*8, NULL, 5, NULL);

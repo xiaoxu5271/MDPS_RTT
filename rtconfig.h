@@ -159,7 +159,7 @@
 /* light weight TCP/IP stack */
 
 #define RT_USING_LWIP
-#define RT_USING_LWIP202
+#define RT_USING_LWIP210
 #define RT_LWIP_IGMP
 #define RT_LWIP_ICMP
 #define RT_LWIP_DNS
@@ -215,6 +215,23 @@
 
 #define PKG_USING_WEBCLIENT
 #define PKG_USING_WEBCLIENT_V201
+#define PKG_USING_WEBNET
+#define WEBNET_PORT 80
+#define WEBNET_CONN_MAX 16
+#define WEBNET_ROOT "/webnet"
+
+/* Select supported modules */
+
+#define WEBNET_USING_AUTH
+#define WEBNET_USING_CGI
+#define WEBNET_USING_ASP
+#define WEBNET_USING_SSI
+#define WEBNET_USING_INDEX
+#define WEBNET_USING_ALIAS
+#define WEBNET_USING_UPLOAD
+#define WEBNET_CACHE_LEVEL 0
+#define WEBNET_USING_SAMPLES
+#define PKG_USING_WEBNET_LATEST_VERSION
 #define PKG_USING_CJSON
 #define PKG_USING_CJSON_LATEST_VERSION
 
