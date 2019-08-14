@@ -106,7 +106,7 @@ void DW1000_init(void)
 {
     DW1000_gpio_init();
     HAL_SPI_MspDeInit(&hspi2);
-    MX_SPI1_Init(SPI_BAUDRATEPRESCALER_16);
+    MX_SPI1_Init(SPI_BAUDRATEPRESCALER_4);
     // rt_hw_spi_DW1000_init();
     // HAL_SPI_MspDeInit(&hspi1);
     // MX_SPI1_Init(SPI_BAUDRATEPRESCALER_32);

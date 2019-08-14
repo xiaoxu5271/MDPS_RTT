@@ -39,7 +39,7 @@ int main(void)
 
     fal_init();
     // DW1000_init();
-    //wifi_connect();
+    // wifi_connect();
     run_dw1000_task();
     // rt_wlan_config_autoreconnect(RT_TRUE); //开启自动重连
     rt_kprintf("The current version of APP firmware is %s\n", APP_VERSION);

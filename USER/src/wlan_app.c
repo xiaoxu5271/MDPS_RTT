@@ -9,7 +9,7 @@
 
 #include "wlan_app.h"
 
-#define WLAN_SSID "XIAOXU"
+#define WLAN_SSID "SmartWiFi-3704"
 #define WLAN_PASSWORD "12345678"
 #define NET_READY_TIME_OUT (rt_tick_from_millisecond(15 * 1000))
 
