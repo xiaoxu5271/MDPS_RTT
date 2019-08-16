@@ -66,9 +66,9 @@ extern instance_data_t instance_data;
 uint16_t no_resp_tag = 7;
 uint16_t no_resp_addr[NO_RESP_TAG_NUM] = {0};
 
-double dwt_prq_dealy_16m = 515.9067;
+// double dwt_prq_dealy_16m = 515.9067;
 
-//double dwt_prq_dealy_16m = 16520;
+double dwt_prq_dealy_16m = 16520;
 //double dwt_prq_dealy_16m = 0;
 
 //extern OsiSyncObj_t dw1000_Semaphore;
@@ -464,7 +464,7 @@ static void dw1000_app_task(void *arg)
         //printf("tick:%d\r\n",(int)sys_Tick);
         //vTaskDelay(1000 / portTICK_RATE_MS);
         //vTaskDelay(1);
-        rt_thread_mdelay(1);
+        // rt_thread_mdelay(1);
     }
 }
 static rt_timer_t timer1;
@@ -615,16 +615,20 @@ static void print_task(void *p)
             }
 
             char *data_str = cJSON_PrintUnformatted(data);
-            uart_send.len = rt_sprintf(uart_send.buf, "%s", data_str);
+            // uart_send.len = rt_sprintf(uart_send.buf, "%s", data_str);
+            memcpy(uart_send.buf, data_str, strlen(data_str) + 1);
             rt_free(data_str);
             cJSON_Delete(data);
 
             cJSON_AddStringToObject(root, "data", uart_send.buf);
             char *root_str = cJSON_PrintUnformatted(root);
             cJSON_Delete(root);
-            msg_send.len = rt_sprintf(msg_send.buf, "%s", root_str);
+            // msg_send.len = rt_sprintf(msg_send.buf, "%s", root_str);
+            memcpy(msg_send.buf, root_str, strlen(root_str) + 1);
             rt_free(root_str);
-            rt_kprintf("%s\n", uart_send.buf);
+
+            if (strcmp(s_addr_tem, "0301") == 0)
+                rt_kprintf("%s\n", uart_send.buf);
             // rt_kprintf("msg_send:%s\n", msg_send.buf);
             rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
         }
@@ -703,7 +707,7 @@ void run_dw1000_task(void)
     tid1 = rt_thread_create("thread1",
                             print_task, RT_NULL,
                             4096,
-                            20, 20);
+                            1, 20);
 
     if (tid1 != RT_NULL)
         rt_thread_startup(tid1);

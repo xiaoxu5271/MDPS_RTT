@@ -106,7 +106,7 @@ void DW1000_init(void)
 {
     DW1000_gpio_init();
     HAL_SPI_MspDeInit(&hspi2);
-    MX_SPI1_Init(SPI_BAUDRATEPRESCALER_4);
+    MX_SPI1_Init(SPI_BAUDRATEPRESCALER_16);
     // rt_hw_spi_DW1000_init();
     // HAL_SPI_MspDeInit(&hspi1);
     // MX_SPI1_Init(SPI_BAUDRATEPRESCALER_32);
@@ -146,8 +146,8 @@ void DW1000_disableirq(void)
 //speed:SPI_BAUDRATEPRESCALER_2,SPI_BAUDRATEPRESCALER_4....
 void spi_speed_set(int speed)
 {
-    // HAL_SPI_MspDeInit(&hspi2);
-    // MX_SPI1_Init(speed);
-    // HAL_SPI_MspInit(&hspi2);
+    HAL_SPI_MspDeInit(&hspi2);
+    MX_SPI1_Init(speed);
+    HAL_SPI_MspInit(&hspi2);
     rt_kprintf("set spi speed : %d \r\n", speed);
 }
