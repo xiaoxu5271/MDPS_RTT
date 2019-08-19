@@ -17,6 +17,7 @@ void DW1000_disableirq(void);
 #define DW1000_CS GET_PIN(F, 7)
 #define DW1000_RST GET_PIN(F, 8)
 #define DW1000_IRQ GET_PIN(F, 9)
+#define DW1000_5V_EN GET_PIN(F, 10)
 
 #define DW1000_DW_RST_on rt_pin_write(DW1000_RST, PIN_HIGH) //(GPIOE->BSRR = GPIO_PIN_4)
 #define DW1000_DW_RST_off rt_pin_write(DW1000_RST, PIN_LOW) //(GPIOE->BSRR = (uint32_t)GPIO_PIN_4 << 16U)

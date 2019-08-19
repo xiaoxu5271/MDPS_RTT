@@ -38,7 +38,7 @@ uint16_t dev_panid = 0x0411;
 
 //uint16_t dev_address = 0xa67A;
 
-uint16_t dev_address = 0xa668;
+uint16_t dev_address = 0xa669;
 uint8_t s_pwr = 0;
 unsigned long pwr_val = 0x1f1f1f1f;
 //uint8_t s_pwr = 1;
@@ -68,7 +68,7 @@ uint16_t no_resp_addr[NO_RESP_TAG_NUM] = {0};
 
 // double dwt_prq_dealy_16m = 515.9067;
 
-double dwt_prq_dealy_16m = 16520;
+double dwt_prq_dealy_16m = 16498.0;
 //double dwt_prq_dealy_16m = 0;
 
 //extern OsiSyncObj_t dw1000_Semaphore;
@@ -93,17 +93,10 @@ struct rt_messagequeue print_data;
 struct rt_messagequeue message_send; //udp_send
 dw1000_debug_message_tag dw1000_debug_message;
 
-#if 0
-//SemaphoreHandle_t xSemaphore;
-void DW1000_CS_off(void) {
+void process_deca_irq(void *pvParameters);
 
-    gpio_set_level(PIN_NUM_CS,0);
-}
-void DW1000_CS_on(void)
-{
-    gpio_set_level(PIN_NUM_CS,1);
-}
-#endif
+rt_base_t level_dw;
+
 /*******************************************************************************
 //delay ms
 *******************************************************************************/
@@ -139,21 +132,16 @@ void reset_DW1000(void)
 }
 void dw1000_irq_isr_handler(void *p)
 {
-    //uint32_t gpio_num = (uint32_t) arg;
-    //BaseType_t  xHigherPriorityTaskWoken;
-    //xQueueSendFromISR(dw1000_irq_evt_queue, &gpio_num, NULL);
-    //if(gpio_get_level(PIN_NUM_DW_IRQ)==1)
-    //printf("int\r\n");
-    //if(GPIO_read(DW1000_IRQ)==1)
-    //if(HAL_GPIO_ReadPin(DW1000_IRQ_PORT,DW1000_IRQ)== GPIO_PIN_SET)
+    /* πÿ±’÷–∂œ */
+    level_dw = rt_hw_interrupt_disable();
+
     if (DW1000_IRQ_DATA)
     {
-        //rt_kprintf("int\r\n");
-        //xSemaphoreGiveFromISR( dw1000_irq_xSemaphore, &xHigherPriorityTaskWoken );
         rt_sem_release(dw1000_irq_xSemaphore);
-
-        //portYIELD_FROM_ISR( );
     }
+
+    /* ª÷∏¥÷–∂œ */
+    rt_hw_interrupt_enable(level_dw);
 }
 //--------------------------------------
 /*******************************************************************************
@@ -389,6 +377,7 @@ static void dw1000_irq_task(void *arg)
         }
         else
         {
+
             //printf("111");
             //vTaskEnterCritical();
             //vTaskSuspendAll();
@@ -513,9 +502,9 @@ static void print_task(void *p)
     message_mdps_t msg_send;
     message_mdps_t uart_send;
     // char uart_send_buff[256];
-    char s_addr_tem[8];
-    char d_addr_tem[8];
-    char rx_time_tem[16];
+    char s_addr_tem[5];
+    char d_addr_tem[5];
+    char rx_time_tem[11];
     // memset(uart_send_buff, 0, sizeof(uart_send_buff));
 
     while (1)
@@ -524,10 +513,10 @@ static void print_task(void *p)
         if (rt_mq_recv(&message_print, &p_Msg, sizeof(p_Msg), RT_WAITING_FOREVER) == RT_EOK)
         {
 
-            memset(uart_send.buf, 0, sizeof(uart_send.buf));
-            memset(s_addr_tem, 0, sizeof(s_addr_tem));
-            memset(d_addr_tem, 0, sizeof(d_addr_tem));
-            memset(rx_time_tem, 0, sizeof(rx_time_tem));
+            // memset(uart_send.buf, 0, sizeof(uart_send.buf));
+            // memset(s_addr_tem, 0, sizeof(s_addr_tem));
+            // memset(d_addr_tem, 0, sizeof(d_addr_tem));
+            // memset(rx_time_tem, 0, sizeof(rx_time_tem));
             snprintf(s_addr_tem, sizeof(s_addr_tem), "%04x", p_Msg.s_addr);                                      //s
             snprintf(d_addr_tem, sizeof(d_addr_tem), "%04x", p_Msg.d_addr);                                      //d
             snprintf(rx_time_tem, sizeof(rx_time_tem), "%02x%08x", (uint8_t)p_Msg.rx_time[1], p_Msg.rx_time[0]); //t
@@ -597,7 +586,7 @@ static void print_task(void *p)
                 cJSON_AddStringToObject(data, "d", d_addr_tem);
                 cJSON_AddNumberToObject(data, "l", p_Msg.distance_val);
                 cJSON_AddNumberToObject(data, "r", p_Msg.rssi_val);
-                cJSON_AddStringToObject(data, "msg", RT_NULL);
+                cJSON_AddStringToObject(data, "msg", "");
                 break;
             }
 #ifdef TIME_STAMP_DEBUG
@@ -615,20 +604,21 @@ static void print_task(void *p)
             }
 
             char *data_str = cJSON_PrintUnformatted(data);
-            // uart_send.len = rt_sprintf(uart_send.buf, "%s", data_str);
-            memcpy(uart_send.buf, data_str, strlen(data_str) + 1);
+            uart_send.len = rt_sprintf(uart_send.buf, "%s", data_str);
+            // memcpy(uart_send.buf, data_str, strlen(data_str) + 1);
             rt_free(data_str);
             cJSON_Delete(data);
 
             cJSON_AddStringToObject(root, "data", uart_send.buf);
             char *root_str = cJSON_PrintUnformatted(root);
             cJSON_Delete(root);
-            // msg_send.len = rt_sprintf(msg_send.buf, "%s", root_str);
-            memcpy(msg_send.buf, root_str, strlen(root_str) + 1);
+            msg_send.len = rt_sprintf(msg_send.buf, "%s", root_str);
+            // memcpy(msg_send.buf, root_str, strlen(root_str) + 1);
             rt_free(root_str);
 
-            if (strcmp(s_addr_tem, "0301") == 0)
-                rt_kprintf("%s\n", uart_send.buf);
+            // if (strcmp(s_addr_tem, "0301") == 0)
+            // if (p_Msg.msg_type == 4)
+            rt_kprintf("%s\n", uart_send.buf);
             // rt_kprintf("msg_send:%s\n", msg_send.buf);
             rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
         }
@@ -707,7 +697,7 @@ void run_dw1000_task(void)
     tid1 = rt_thread_create("thread1",
                             print_task, RT_NULL,
                             4096,
-                            1, 20);
+                            RT_THREAD_PRIORITY_MAX - 2, 20);
 
     if (tid1 != RT_NULL)
         rt_thread_startup(tid1);
@@ -736,7 +726,7 @@ void run_dw1000_task(void)
     tid1 = rt_thread_create("dw1000_app_task",
                             dw1000_app_task, RT_NULL,
                             2048,
-                            1, 20);
+                            RT_THREAD_PRIORITY_MAX - 2, 20);
 
     if (tid1 != RT_NULL)
         rt_thread_startup(tid1);
@@ -847,4 +837,14 @@ void read_noresp_addrs(char *addr_buf, uint16_t buf_size)
     }
 
     strcat(addr_buf, "\"}");
+}
+
+void PA_LNA_ON()
+{
+    rt_pin_write(DW1000_5V_EN, PIN_HIGH);
+}
+
+void PA_LNA_OFF()
+{
+    rt_pin_write(DW1000_5V_EN, PIN_LOW);
 }

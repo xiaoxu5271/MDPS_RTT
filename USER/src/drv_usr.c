@@ -92,9 +92,9 @@ void DW1000_gpio_init(void)
 {
     // rt_pin_mode(W25Q128_CS, PIN_MODE_OUTPUT); //FLASH CS
     // rt_pin_write(W25Q128_CS, PIN_HIGH);       //À­¸ßflash ½ûÖ¹flash²Ù×÷
-
-    rt_pin_mode(DW1000_CS, PIN_MODE_OUTPUT);  //DW1000 SPI CS
-    rt_pin_mode(DW1000_RST, PIN_MODE_OUTPUT); //DW1000 RESET
+    rt_pin_mode(DW1000_5V_EN, PIN_MODE_OUTPUT); //DW1000 RESET
+    rt_pin_mode(DW1000_CS, PIN_MODE_OUTPUT);    //DW1000 SPI CS
+    rt_pin_mode(DW1000_RST, PIN_MODE_OUTPUT);   //DW1000 RESET
 
     rt_pin_mode(DW1000_IRQ, PIN_MODE_INPUT_PULLUP);
     rt_pin_attach_irq(DW1000_IRQ, PIN_IRQ_MODE_RISING_FALLING, dw1000_irq_isr_handler, (void *)"callbackargs");

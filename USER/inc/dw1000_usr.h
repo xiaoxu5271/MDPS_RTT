@@ -55,4 +55,7 @@ void DW_IRQn_disenable(void);
 bool check_noresp_addrs(uint16_t tag_addr);
 void run_dw1000_task(void);
 
+void PA_LNA_OFF();
+void PA_LNA_ON();
+
 #endif
