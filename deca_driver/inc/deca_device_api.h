@@ -73,7 +73,7 @@ extern "C"
 
 #define DWT_DEVICE_ID (0xDECA0130) //!< DW1000 MP device ID
 
-#define PA_LNA_MODE
+// #define PA_LNA_MODE
 
 //! constants for selecting the bit rate for data TX (and RX)
 //! These are defined for write (with just a shift) the TX_FCTRL register
