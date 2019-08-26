@@ -28,7 +28,7 @@
 #include "dw1000_usr.h"
 #include "rtthread.h"
 
-// #define PA_LNA_MODE
+#define PA_LNA_MODE
 
 extern struct rt_messagequeue message_print;
 

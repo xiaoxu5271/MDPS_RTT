@@ -38,7 +38,7 @@ uint16_t dev_panid = 0x0411;
 
 //uint16_t dev_address = 0xa67A;
 
-uint16_t dev_address = 0xa669;
+uint16_t dev_address = 0xa666;
 uint8_t s_pwr = 0;
 unsigned long pwr_val = 0x1f1f1f1f;
 //uint8_t s_pwr = 1;

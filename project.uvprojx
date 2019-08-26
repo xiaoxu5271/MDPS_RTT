@@ -1237,12 +1237,7 @@
             <File>
               <FileName>time.c</FileName>
               <FileType>1</FileType>
-              <FilePath>rt-thread\components\libc\compilers\armlibc\time.c</FilePath>
-            </File>
-            <File>
-              <FileName>gmtime_r.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>rt-thread\components\libc\compilers\common\gmtime_r.c</FilePath>
+              <FilePath>rt-thread\components\libc\compilers\common\time.c</FilePath>
             </File>
           </Files>
         </Group>
