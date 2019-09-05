@@ -47,7 +47,7 @@ uint8_t anchor_mode = 0;
 uint16_t sync_period = 500;
 uint16_t range_period = 1000 * 5;
 //uint8_t resp_slot = 3;
-uint8_t resp_slot = 1;
+uint8_t resp_slot = 4;
 //uint8_t dev_speed = 1;
 //uint8_t dev_channel = 5;
 uint8_t dev_speed = 1;
@@ -616,9 +616,9 @@ static void print_task(void *p)
             // memcpy(msg_send.buf, root_str, strlen(root_str) + 1);
             rt_free(root_str);
 
-            // if (strcmp(s_addr_tem, "0301") == 0 || strcmp(s_addr_tem, "0005") == 0)
+            // if (strcmp(s_addr_tem, "2019") == 0)
             // if (p_Msg.msg_type == 4)
-            rt_kprintf("%s\n", uart_send.buf);
+            // rt_kprintf("%s\n", uart_send.buf);
             // rt_kprintf("msg_send:%s\n", msg_send.buf);
             rt_mq_send(&message_send, (void *)&msg_send, sizeof(msg_send));
         }

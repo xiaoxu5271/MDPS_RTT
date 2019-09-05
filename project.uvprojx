@@ -336,9 +336,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER, STM32F407xx, RT_USING_ARM_LIBC</Define>
+              <Define>USE_HAL_DRIVER, STM32F407xx, LFS_CONFIG=lfs_config.h, RT_USING_ARM_LIBC</Define>
               <Undefine></Undefine>
-              <IncludePath>.;rt-thread\include;applications;.;board;board\CubeMX_Config\Inc;board\ports;libraries\HAL_Drivers;libraries\HAL_Drivers\config;libraries\HAL_Drivers\drv_flash;deca_application\inc;deca_driver\inc;packages\cJSON-latest;packages\fal-latest\inc;packages\netutils-latest\ntp;packages\ota_downloader-latest;packages\rw007-latest;packages\rw007-latest\inc;packages\webclient-v2.0.1\inc;packages\webnet-latest\inc;USER\inc;rt-thread\libcpu\arm\common;rt-thread\libcpu\arm\cortex-m4;rt-thread\components\dfs\include;rt-thread\components\dfs\filesystems\devfs;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\spi;rt-thread\components\drivers\include;rt-thread\components\drivers\spi\sfud\inc;rt-thread\components\drivers\include;rt-thread\components\drivers\wlan;rt-thread\components\finsh;rt-thread\components\libc\compilers\armlibc;rt-thread\components\libc\compilers\common;rt-thread\components\net\lwip-2.1.0\src;rt-thread\components\net\lwip-2.1.0\src\include;rt-thread\components\net\lwip-2.1.0\src\arch\include;rt-thread\components\net\lwip-2.1.0\src\include\netif;rt-thread\components\net\netdev\include;rt-thread\components\net\sal_socket\include;rt-thread\components\net\sal_socket\include\socket;rt-thread\components\net\sal_socket\impl;rt-thread\components\net\sal_socket\include\dfs_net;rt-thread\components\net\sal_socket\include\dfs_net\sys_select;rt-thread\components\net\sal_socket\include\socket\sys_socket;rt-thread\components\utilities\ymodem;libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Inc;libraries\STM32F4xx_HAL\CMSIS\Device\ST\STM32F4xx\Include;libraries\STM32F4xx_HAL\CMSIS\Include</IncludePath>
+              <IncludePath>.;rt-thread\include;applications;.;board;board\CubeMX_Config\Inc;board\ports;libraries\HAL_Drivers;libraries\HAL_Drivers\config;libraries\HAL_Drivers\drv_flash;deca_application\inc;deca_driver\inc;packages\fal-latest\inc;packages\littlefs-latest;packages\netutils-latest\ntp;packages\ota_downloader-latest;packages\rw007-latest;packages\rw007-latest\inc;packages\webclient-v2.0.1\inc;packages\webnet-latest\inc;USER\inc;rt-thread\libcpu\arm\common;rt-thread\libcpu\arm\cortex-m4;rt-thread\components\dfs\include;rt-thread\components\dfs\filesystems\devfs;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\spi;rt-thread\components\drivers\include;rt-thread\components\drivers\spi\sfud\inc;rt-thread\components\drivers\include;rt-thread\components\drivers\wlan;rt-thread\components\finsh;rt-thread\components\libc\compilers\armlibc;rt-thread\components\libc\compilers\common;rt-thread\components\net\lwip-2.1.0\src;rt-thread\components\net\lwip-2.1.0\src\include;rt-thread\components\net\lwip-2.1.0\src\arch\include;rt-thread\components\net\lwip-2.1.0\src\include\netif;rt-thread\components\net\netdev\include;rt-thread\components\net\sal_socket\include;rt-thread\components\net\sal_socket\include\socket;rt-thread\components\net\sal_socket\impl;rt-thread\components\net\sal_socket\include\dfs_net;rt-thread\components\net\sal_socket\include\dfs_net\sys_select;rt-thread\components\net\sal_socket\include\socket\sys_socket;rt-thread\components\utilities\ymodem;libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Inc;libraries\STM32F4xx_HAL\CMSIS\Device\ST\STM32F4xx\Include;libraries\STM32F4xx_HAL\CMSIS\Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -570,26 +570,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>cJSON</GroupName>
-          <Files>
-            <File>
-              <FileName>cJSON.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\cJSON-latest\cJSON.c</FilePath>
-            </File>
-            <File>
-              <FileName>cJSON_port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\cJSON-latest\cJSON_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>cJSON_util.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\cJSON-latest\cJSON_util.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>fal</GroupName>
           <GroupOption>
             <CommonProperty>
@@ -685,6 +665,31 @@
               <FileName>fal_flash_sfud_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\fal-latest\samples\porting\fal_flash_sfud_port.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>littlefs</GroupName>
+          <Files>
+            <File>
+              <FileName>dfs_lfs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\littlefs-latest\dfs_lfs.c</FilePath>
+            </File>
+            <File>
+              <FileName>lfs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\littlefs-latest\lfs.c</FilePath>
+            </File>
+            <File>
+              <FileName>lfs_crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\littlefs-latest\lfs_crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>lfs_util.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\littlefs-latest\lfs_util.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -896,6 +901,11 @@
           <GroupName>USER</GroupName>
           <Files>
             <File>
+              <FileName>cJSON.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>USER\src\cJSON.c</FilePath>
+            </File>
+            <File>
               <FileName>cpu_usage.c</FileName>
               <FileType>1</FileType>
               <FilePath>USER\src\cpu_usage.c</FilePath>
@@ -911,9 +921,14 @@
               <FilePath>USER\src\dw1000_usr.c</FilePath>
             </File>
             <File>
-              <FileName>udp_client.c</FileName>
+              <FileName>http_send.c</FileName>
               <FileType>1</FileType>
-              <FilePath>USER\src\udp_client.c</FilePath>
+              <FilePath>USER\src\http_send.c</FilePath>
+            </File>
+            <File>
+              <FileName>udp_send.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>USER\src\udp_send.c</FilePath>
             </File>
             <File>
               <FileName>wlan_app.c</FileName>
@@ -1068,6 +1083,11 @@
               <FileName>pin.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\misc\pin.c</FilePath>
+            </File>
+            <File>
+              <FileName>mtd_nor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\mtd\mtd_nor.c</FilePath>
             </File>
             <File>
               <FileName>rtc.c</FileName>
@@ -1618,6 +1638,11 @@
               <FileName>stm32f4xx_hal_rtc_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_nor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_nor.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_flash.c</FileName>

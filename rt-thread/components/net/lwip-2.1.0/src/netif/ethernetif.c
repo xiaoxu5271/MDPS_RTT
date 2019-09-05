@@ -524,7 +524,7 @@ rt_err_t eth_device_init_with_flag(struct eth_device *dev, const char *name, rt_
 
 #if LWIP_NETIF_HOSTNAME
     /* Initialize interface hostname */
-    netif->hostname = "rtthread";
+    netif->hostname = "rtthre-1";
 #endif /* LWIP_NETIF_HOSTNAME */
 
     /* if tcp thread has been started up, we add this netif to the system */

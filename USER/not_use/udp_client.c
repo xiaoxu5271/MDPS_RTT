@@ -4,12 +4,10 @@
 #include <rtthread.h>
 #include <sys/socket.h> /* Ê¹ÓÃBSD socket£¬ÐèÒª°üº¬sockets.hÍ·ÎÄ¼þ */
 #include "netdb.h"
-#include <finsh.h>
 #include <webclient.h>
 #include "string.h"
 
 #include <dw1000_usr.h>
-#include <cJSON.h>
 
 #define DEBUG_UDP_CLIENT
 
@@ -20,8 +18,8 @@
 #define DBG_LVL DBG_INFO /* DBG_ERROR */
 #endif
 #include <rtdbg.h>
-// static char url[256];
-// static int port = 8080;
+static char url[256];
+static int port = 8080;
 const char send_data[] = "This is UDP Client from lch test.\n"; /* ·¢ËÍÓÃµ½µÄÊý¾Ý */
 
 #if 0
@@ -30,12 +28,13 @@ const char send_data[] = "This is UDP Client from lch test.\n"; /* ·¢ËÍÓÃµ½µÄÊý¾
 #define UDP_SERVER_IP "192.168.1.12"
 //test
 #else
-#define UDP_SERVER_PORT 3005
-#define UDP_SERVER_IP "192.168.1.8"
+#define UDP_SERVER_PORT 7000
+#define UDP_SERVER_IP "192.168.1.102"
 #endif
 //lch add end
 static void udpclient(void *arg)
 {
+
 	message_mdps_t msg;
 	struct hostent *host;
 	static int sock;
@@ -58,13 +57,12 @@ static void udpclient(void *arg)
 		return;
 	}
 
-	host = (struct hostent *)gethostbyname(UDP_SERVER_IP);
 	/* ³õÊ¼»¯Ô¤Á¬½ÓµÄ·þÎñ¶ËµØÖ· */
 	server_addr.sin_family = AF_INET;
 	//server_addr.sin_port = htons(port);
-	server_addr.sin_addr = *((struct in_addr *)host->h_addr);
+	//server_addr.sin_addr = *((struct in_addr *)host->h_addr);
 	server_addr.sin_port = htons(UDP_SERVER_PORT);
-	// server_addr.sin_addr.s_addr = inet_addr(UDP_SERVER_IP);
+	server_addr.sin_addr.s_addr = inet_addr(UDP_SERVER_IP);
 	rt_memset(&(server_addr.sin_zero), 0, sizeof(server_addr.sin_zero));
 	while (1)
 	{
@@ -82,14 +80,13 @@ static void udpclient(void *arg)
 		{
 			sendto(sock, msg.buf, msg.len, 0,
 				   (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
-			// rt_kprintf("%s\r\n", msg.buf);
+			rt_kprintf("send msg:%s\r\n", msg.buf);
 		}
 #endif
 	}
 }
-
 //--------------------------------------------------------
-static void start_udp_client(int argc, char **argv)
+static void udpclient_test(int argc, char **argv)
 {
 	rt_thread_t tid;
 	tid = rt_thread_create("udp_client",
@@ -101,14 +98,12 @@ static void start_udp_client(int argc, char **argv)
 	}
 	return;
 }
-
 //-------------------------------------------------------
 
 #define GET_HEADER_BUFSZ 1024
 #define GET_REV_BUF_SIZE 1024
 static int send_http_get(const char *uri, unsigned char *buf, int *len)
 {
-
 	int ret = 0, resp_status;
 	struct webclient_session *session = RT_NULL;
 	int file_size = 0, length, total_length = 0;
@@ -161,7 +156,7 @@ static int send_http_get(const char *uri, unsigned char *buf, int *len)
 			memcpy(buf + total_length, buffer_read, length);
 			total_length += length;
 			*len = total_length;
-			LOG_I("get length:(%d)!", length);
+			LOG_I("get  length:(%d)!", length);
 		}
 		else
 		{
@@ -194,7 +189,7 @@ __exit:
 }
 //-----------------------------------------------------
 const char *test_uri = "http://192.168.1.12:8066/netlog?data=";
-
+#include <cJSON.h>
 void anchor_tick_str(char *pdst);
 void cmd_return_str(char *pdst);
 void cmd_devid_str(char *pdst);
@@ -206,119 +201,151 @@ char url_cmd_return[256];
 char url_devid[256];
 char data[512];
 
-// void send_http_get_test(void *p)
-// {
-// 	int cnt = 0;
-// 	int ret = 0;
-// 	int len;
-// 	anchor_tick_str(data);
-// 	sprintf(url_tick, "%s%s", test_uri, data);
-// 	cmd_return_str(data);
-// 	sprintf(url_cmd_return, "%s%s", test_uri, data);
-// 	cmd_devid_str(data);
-// 	sprintf(url_devid, "%s%s", test_uri, data);
-
-// 	//rt_kprintf("url%s\r\n",url);
-// 	//rt_kprintf("url");
-// 	while (1)
-// 	{
-
-// 		switch (cnt)
-// 		{
-// 		case 0:
-// 			ret = send_http_get(url_tick, buf, &len);
-// 			cnt++;
-// 			break;
-// 		case 1:
-// 			ret = send_http_get(url_cmd_return, buf, &len);
-// 			cnt++;
-// 			break;
-// 		case 2:
-// 			ret = send_http_get(url_devid, buf, &len);
-// 			cnt++;
-// 			break;
-// 		default:
-// 			break;
-// 		}
-// 		if (ret == RT_EOK)
-// 		{
-// 			rt_kprintf("get data:%s", buf);
-// 		}
-// 		if (cnt >= 3)
-// 			cnt = 0;
-
-// 		rt_thread_mdelay(1000);
-// 	}
-// }
-
-void udpclient_test(int argc, char **argv)
+void send_http_get_test(void *p)
 {
-	int sock, port, count;
-	struct hostent *host;
-	struct sockaddr_in server_addr;
-	const char *url;
-	message_mdps_t msg;
+	int cnt = 0;
+	int ret = 0;
+	int len;
+	anchor_tick_str(data);
+	sprintf(url_tick, "%s%s", test_uri, data);
+	cmd_return_str(data);
+	sprintf(url_cmd_return, "%s%s", test_uri, data);
+	cmd_devid_str(data);
+	sprintf(url_devid, "%s%s", test_uri, data);
 
-	/* ½ÓÊÕµ½µÄ²ÎÊýÐ¡ÓÚ 3 ¸ö */
-	if (argc < 3)
+	//rt_kprintf("url%s\r\n",url);
+	//rt_kprintf("url");
+	while (1)
 	{
-		rt_kprintf("Usage: udpclient URL PORT [COUNT = 10]\n");
-		rt_kprintf("Like: tcpclient 192.168.12.44 5000\n");
-		return;
-	}
-
-	url = argv[1];
-	port = strtoul(argv[2], 0, 10);
-
-	if (argc > 3)
-		count = strtoul(argv[3], 0, 10);
-	else
-		count = 10;
-
-	/* Í¨¹ýº¯ÊýÈë¿Ú²ÎÊý url »ñµÃ host µØÖ·£¨Èç¹ûÊÇÓòÃû£¬»á×öÓòÃû½âÎö£© */
-	host = (struct hostent *)gethostbyname(url);
-
-	/* ´´½¨Ò»¸ö socket£¬ÀàÐÍÊÇ SOCK_DGRAM£¬UDP ÀàÐÍ */
-	if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-	{
-		rt_kprintf("Socket error\n");
-		return;
-	}
-
-	/* ³õÊ¼»¯Ô¤Á¬½ÓµÄ·þÎñ¶ËµØÖ· */
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(port);
-	server_addr.sin_addr = *((struct in_addr *)host->h_addr);
-	rt_memset(&(server_addr.sin_zero), 0, sizeof(server_addr.sin_zero));
-
-	/* ×Ü¼Æ·¢ËÍ count ´ÎÊý¾Ý */
-	while (count)
-	{
-		// /* ·¢ËÍÊý¾Ýµ½·þÎñÔ¶¶Ë */
-		// sendto(sock, send_data, strlen(send_data), 0,
-		// 	   (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
-
-		// /* Ïß³ÌÐÝÃßÒ»¶ÎÊ±¼ä */
-		// rt_thread_delay(50);
-
-		// /* ¼ÆÊýÖµ¼õÒ» */
-		// count--;
-
-		if (rt_mq_recv(&message_send, &msg, sizeof(msg), RT_WAITING_FOREVER) == RT_EOK)
+		switch (cnt)
 		{
-			sendto(sock, msg.buf, msg.len, 0,
-				   (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
-			// rt_kprintf("%s\r\n", msg.buf);
+		case 0:
+			ret = send_http_get(url_tick, buf, &len);
+			cnt++;
+			break;
+		case 1:
+			ret = send_http_get(url_cmd_return, buf, &len);
+			cnt++;
+			break;
+		case 2:
+			ret = send_http_get(url_devid, buf, &len);
+			cnt++;
+			break;
+		default:
+			break;
 		}
-	}
+		if (ret == RT_EOK)
+		{
+			rt_kprintf("get data:%s", buf);
+		}
+		if (cnt >= 3)
+			cnt = 0;
 
-	/* ¹Ø±ÕÕâ¸ö socket */
-	closesocket(sock);
+		rt_thread_mdelay(1000);
+	}
+}
+void anchor_tick_str(char *pdst)
+{
+	cJSON *root = cJSON_CreateObject();
+
+	cJSON *data = cJSON_CreateObject();
+	cJSON_AddNumberToObject(data, "p", 66);
+	cJSON_AddStringToObject(data, "exceptstr", "");
+	cJSON_AddNumberToObject(data, "exceptnum", 0);
+	cJSON_AddNumberToObject(data, "datanum", 3229);
+	cJSON_AddStringToObject(data, "selfaddr", "a668");
+
+	cJSON_AddItemToObject(root, "data", data);
+
+	cJSON *data_obj = cJSON_CreateObject();
+
+	cJSON *data_obj_data1 = cJSON_CreateObject();
+	cJSON_AddNumberToObject(data_obj_data1, "a258", 112);
+	cJSON_AddItemToObject(data_obj, "1", data_obj_data1);
+
+	cJSON *data_obj_data2 = cJSON_CreateObject();
+	cJSON_AddNumberToObject(data_obj_data2, "0308", 463);
+	cJSON_AddNumberToObject(data_obj_data2, "0303", 463);
+	cJSON_AddNumberToObject(data_obj_data2, "a258", 58);
+	cJSON_AddNumberToObject(data_obj_data2, "0304", 467);
+	cJSON_AddNumberToObject(data_obj_data2, "0306", 421);
+	cJSON_AddItemToObject(data_obj, "2", data_obj_data2);
+
+	cJSON *data_obj_data3 = cJSON_CreateObject();
+	cJSON_AddNumberToObject(data_obj_data3, "0308", 463);
+	cJSON_AddNumberToObject(data_obj_data3, "0303", 463);
+	cJSON_AddNumberToObject(data_obj_data3, "a258", 58);
+	cJSON_AddItemToObject(data_obj, "3", data_obj_data3);
+
+	cJSON *data_obj_data4 = cJSON_CreateObject();
+	cJSON_AddNumberToObject(data_obj_data4, "0304", 467);
+	cJSON_AddItemToObject(data_obj, "4", data_obj_data4);
+
+	cJSON_AddItemToObject(root, "data_obj", data_obj);
+
+	cJSON_AddNumberToObject(root, "nowtime", 15);
+	cJSON_AddStringToObject(root, "mac", "aabbccddeeff");
+
+	//char* datas = cJSON_Print(root);
+	//rt_kprintf("%s\n", datas);
+
+	char *datas = cJSON_PrintUnformatted(root);
+	strcpy(pdst, datas);
+	rt_kprintf("%s\n", pdst);
+
+	cJSON_Delete(root);
+	rt_free(datas);
+}
+/*
+{"p":60,"src_addr":"a001","result":"success",mac:"xxx",address:"a001"}
+*/
+void cmd_return_str(char *pdst)
+{
+	cJSON *root = cJSON_CreateObject();
+	cJSON_AddNumberToObject(root, "p", 60);
+	cJSON_AddStringToObject(root, "src_addr", "a001");
+	cJSON_AddStringToObject(root, "result", "success");
+	cJSON_AddStringToObject(root, "mac", "aabbccddeeff");
+	cJSON_AddStringToObject(root, "address", "a001");
+	//char* datas = cJSON_Print(root);
+	//printf("%s\n", datas);
+	char *datas = cJSON_PrintUnformatted(root);
+	strcpy(pdst, datas);
+	printf("%s\n", pdst);
+	cJSON_Delete(root);
+	rt_free(datas);
+}
+/*
+{"p":9,"Host_Anchor":0,"PanId":"0411","Address":"1004","Channel":2,"Speed":1,"R	espSlot":4,
+"SyncPeriod":500, "range_period":5000,"cm_led":1,mac:"xxx"}
+*/
+void cmd_devid_str(char *pdst)
+{
+	cJSON *root = cJSON_CreateObject();
+	cJSON_AddNumberToObject(root, "p", 9);
+	cJSON_AddNumberToObject(root, "Host_Anchor", 0);
+
+	cJSON_AddStringToObject(root, "PanId", "0411");
+	cJSON_AddStringToObject(root, "Address", "1004");
+
+	cJSON_AddNumberToObject(root, "Channel", 2);
+
+	cJSON_AddNumberToObject(root, "Speed", 1);
+	cJSON_AddNumberToObject(root, "RespSlot", 4);
+	cJSON_AddNumberToObject(root, "SyncPeriod", 4);
+	cJSON_AddNumberToObject(root, "range_period", 5000);
+	cJSON_AddNumberToObject(root, "cm_led", 1);
+	cJSON_AddStringToObject(root, "mac", "aabbccddeeff");
+
+	//char* datas = cJSON_Print(root);
+	//printf("%s\n", datas);
+	char *datas = cJSON_PrintUnformatted(root);
+	strcpy(pdst, datas);
+	printf("%s\n", pdst);
+	cJSON_Delete(root);
+	rt_free(datas);
 }
 
-MSH_CMD_EXPORT(udpclient_test, Start a udp test);
-MSH_CMD_EXPORT(start_udp_client, Start a udp test);
-
-// MSH_CMD_EXPORT(send_http_get_test, test send http get);
-
+MSH_CMD_EXPORT(udpclient_test, Start a udp client);
+MSH_CMD_EXPORT(send_http_get_test, test send http get);
 //MSH_CMD_EXPORT(test_json, json test);

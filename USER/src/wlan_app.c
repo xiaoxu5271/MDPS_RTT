@@ -82,6 +82,7 @@ rt_err_t wifi_connect(void)
         result = rt_sem_take(net_ready, NET_READY_TIME_OUT);
         if (result == RT_EOK)
         {
+            netdev_set_default_user("w0");
             rt_kprintf("networking ready!\n");
         }
         else
@@ -120,6 +121,26 @@ int user_connect(int argc, char *argv[])
 }
 MSH_CMD_EXPORT(user_connect, connect test.);
 
+//设置默认网卡
+static int netdev_set_default_user(const char *name)
+{
+    struct netdev *netdev = RT_NULL;
+
+    /* 通过网卡名称获取网卡对象，名称可以通过 ifconfig 命令查看 */
+    netdev = netdev_get_by_name(name);
+    if (netdev == RT_NULL)
+    {
+        rt_kprintf("not find network interface device name(%s).\n", name);
+        return -1;
+    }
+
+    /* 设置默认网卡对象 */
+    netdev_set_default(netdev);
+
+    rt_kprintf("set default network interface device(%s) success.\n", name);
+    return 0;
+}
+
 static int netdev_set_default_test(int argc, char **argv)
 {
     struct netdev *netdev = RT_NULL;
@@ -144,6 +165,7 @@ static int netdev_set_default_test(int argc, char **argv)
     rt_kprintf("set default network interface device(%s) success.\n", argv[1]);
     return 0;
 }
+
 #ifdef FINSH_USING_MSH
 #include <finsh.h>
 /* 导出命令到 FinSH 控制台 */

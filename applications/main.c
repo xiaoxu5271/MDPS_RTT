@@ -14,9 +14,13 @@
 #include <board.h>
 
 #include "fal.h"
+#include <dfs_fs.h>
 #include "wlan_app.h"
 #include "dw1000_usr.h"
 #include "drv_usr.h"
+#include <rtdbg.h>
+
+#define FS_PARTITION_NAME "filesystem"
 
 /* defined the LED0 pin: PF9 */
 #define LED0_PIN GET_PIN(F, 0)
@@ -27,6 +31,7 @@
 
 int main(void)
 {
+    struct rt_device *mtd_dev = RT_NULL;
     int count = 1;
     /* set LED0 pin mode to output */
     rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);
@@ -38,6 +43,33 @@ int main(void)
     rt_pin_write(LED2_PIN, PIN_HIGH);
 
     fal_init();
+    mtd_dev = fal_mtd_nor_device_create(FS_PARTITION_NAME);
+    if (!mtd_dev)
+    {
+        LOG_E("Can't create a mtd device on '%s' partition.", FS_PARTITION_NAME);
+    }
+    else
+    {
+        /* 挂载 littlefs */
+        if (dfs_mount(FS_PARTITION_NAME, "/", "lfs", 0, 0) == 0)
+        {
+            LOG_I("Filesystem initialized!");
+        }
+        else
+        {
+            /* 格式化文件系统 */
+            dfs_mkfs("lfs", FS_PARTITION_NAME);
+            /* 挂载 littlefs */
+            if (dfs_mount("filesystem", "/", "lfs", 0, 0) == 0)
+            {
+                LOG_I("Filesystem initialized!");
+            }
+            else
+            {
+                LOG_E("Failed to initialize filesystem!");
+            }
+        }
+    }
     // DW1000_init();
     // wifi_connect();
     run_dw1000_task();
