@@ -17,7 +17,7 @@
 #include <dfs_fs.h>
 #include "wlan_app.h"
 #include "dw1000_usr.h"
-#include "drv_usr.h"
+// #include "drv_usr.h"
 #include <rtdbg.h>
 
 #define FS_PARTITION_NAME "filesystem"
@@ -32,7 +32,6 @@
 int main(void)
 {
     struct rt_device *mtd_dev = RT_NULL;
-    int count = 1;
     /* set LED0 pin mode to output */
     rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);
     rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);
@@ -60,7 +59,7 @@ int main(void)
             /* 格式化文件系统 */
             dfs_mkfs("lfs", FS_PARTITION_NAME);
             /* 挂载 littlefs */
-            if (dfs_mount("filesystem", "/", "lfs", 0, 0) == 0)
+            if (dfs_mount(FS_PARTITION_NAME, "/", "lfs", 0, 0) == 0)
             {
                 LOG_I("Filesystem initialized!");
             }
@@ -76,7 +75,7 @@ int main(void)
     // rt_wlan_config_autoreconnect(RT_TRUE); //开启自动重连
     rt_kprintf("The current version of APP firmware is %s\n", APP_VERSION);
 
-    while (count++)
+    while (1)
     {
         rt_pin_write(LED0_PIN, PIN_LOW);
         rt_pin_write(LED1_PIN, PIN_LOW);

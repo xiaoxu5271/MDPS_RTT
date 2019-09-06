@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER, STM32F407xx, LFS_CONFIG=lfs_config.h, RT_USING_ARM_LIBC</Define>
               <Undefine></Undefine>
-              <IncludePath>.;rt-thread\include;applications;.;board;board\CubeMX_Config\Inc;board\ports;libraries\HAL_Drivers;libraries\HAL_Drivers\config;libraries\HAL_Drivers\drv_flash;deca_application\inc;deca_driver\inc;packages\fal-latest\inc;packages\littlefs-latest;packages\netutils-latest\ntp;packages\ota_downloader-latest;packages\rw007-latest;packages\rw007-latest\inc;packages\webclient-v2.0.1\inc;packages\webnet-latest\inc;USER\inc;rt-thread\libcpu\arm\common;rt-thread\libcpu\arm\cortex-m4;rt-thread\components\dfs\include;rt-thread\components\dfs\filesystems\devfs;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\spi;rt-thread\components\drivers\include;rt-thread\components\drivers\spi\sfud\inc;rt-thread\components\drivers\include;rt-thread\components\drivers\wlan;rt-thread\components\finsh;rt-thread\components\libc\compilers\armlibc;rt-thread\components\libc\compilers\common;rt-thread\components\net\lwip-2.1.0\src;rt-thread\components\net\lwip-2.1.0\src\include;rt-thread\components\net\lwip-2.1.0\src\arch\include;rt-thread\components\net\lwip-2.1.0\src\include\netif;rt-thread\components\net\netdev\include;rt-thread\components\net\sal_socket\include;rt-thread\components\net\sal_socket\include\socket;rt-thread\components\net\sal_socket\impl;rt-thread\components\net\sal_socket\include\dfs_net;rt-thread\components\net\sal_socket\include\dfs_net\sys_select;rt-thread\components\net\sal_socket\include\socket\sys_socket;rt-thread\components\utilities\ymodem;libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Inc;libraries\STM32F4xx_HAL\CMSIS\Device\ST\STM32F4xx\Include;libraries\STM32F4xx_HAL\CMSIS\Include</IncludePath>
+              <IncludePath>.;rt-thread\include;applications;.;board;board\CubeMX_Config\Inc;board\ports;libraries\HAL_Drivers;libraries\HAL_Drivers\config;libraries\HAL_Drivers\drv_flash;deca_application\inc;deca_driver\inc;packages\fal-latest\inc;packages\filesystem_samples-latest;packages\littlefs-latest;packages\netutils-latest\ntp;packages\netutils-latest\tftp;.;packages\ota_downloader-latest;packages\rw007-latest;packages\rw007-latest\inc;packages\webclient-v2.0.1\inc;packages\webnet-latest\inc;USER\inc;rt-thread\libcpu\arm\common;rt-thread\libcpu\arm\cortex-m4;rt-thread\components\dfs\include;rt-thread\components\dfs\filesystems\devfs;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\spi;rt-thread\components\drivers\include;rt-thread\components\drivers\spi\sfud\inc;rt-thread\components\drivers\include;rt-thread\components\drivers\wlan;rt-thread\components\finsh;rt-thread\components\libc\compilers\armlibc;rt-thread\components\libc\compilers\common;rt-thread\components\net\lwip-2.1.0\src;rt-thread\components\net\lwip-2.1.0\src\include;rt-thread\components\net\lwip-2.1.0\src\arch\include;rt-thread\components\net\lwip-2.1.0\src\include\netif;rt-thread\components\net\netdev\include;rt-thread\components\net\sal_socket\include;rt-thread\components\net\sal_socket\include\socket;rt-thread\components\net\sal_socket\impl;rt-thread\components\net\sal_socket\include\dfs_net;rt-thread\components\net\sal_socket\include\dfs_net\sys_select;rt-thread\components\net\sal_socket\include\socket\sys_socket;rt-thread\components\utilities\ymodem;libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Inc;libraries\STM32F4xx_HAL\CMSIS\Device\ST\STM32F4xx\Include;libraries\STM32F4xx_HAL\CMSIS\Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -669,6 +669,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>filesystem-samples</GroupName>
+          <Files>
+            <File>
+              <FileName>mkdir_sample.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\filesystem_samples-latest\mkdir_sample.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>littlefs</GroupName>
           <Files>
             <File>
@@ -700,6 +710,26 @@
               <FileName>ntp.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\netutils-latest\ntp\ntp.c</FilePath>
+            </File>
+            <File>
+              <FileName>tftp_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\netutils-latest\tftp\tftp_client.c</FilePath>
+            </File>
+            <File>
+              <FileName>tftp_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\netutils-latest\tftp\tftp_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>tftp_server.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\netutils-latest\tftp\tftp_server.c</FilePath>
+            </File>
+            <File>
+              <FileName>tftp_xfer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\netutils-latest\tftp\tftp_xfer.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -874,6 +904,11 @@
               <FileName>wn_module_alias.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\webnet-latest\module\wn_module_alias.c</FilePath>
+            </File>
+            <File>
+              <FileName>wn_module_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\webnet-latest\module\wn_module_log.c</FilePath>
             </File>
             <File>
               <FileName>wn_module_upload.c</FileName>

@@ -15,7 +15,7 @@
 #define RT_USING_HOOK
 #define RT_USING_IDLE_HOOK
 #define RT_IDEL_HOOK_LIST_SIZE 4
-#define IDLE_THREAD_STACK_SIZE 1024
+#define IDLE_THREAD_STACK_SIZE 512
 #define RT_DEBUG
 #define RT_DEBUG_COLOR
 
@@ -37,7 +37,7 @@
 
 #define RT_USING_DEVICE
 #define RT_USING_CONSOLE
-#define RT_CONSOLEBUF_SIZE 1024
+#define RT_CONSOLEBUF_SIZE 512
 #define RT_CONSOLE_DEVICE_NAME "uart1"
 #define RT_VER_NUM 0x40002
 #define ARCH_ARM
@@ -49,7 +49,7 @@
 
 #define RT_USING_COMPONENTS_INIT
 #define RT_USING_USER_MAIN
-#define RT_MAIN_THREAD_STACK_SIZE 2048
+#define RT_MAIN_THREAD_STACK_SIZE 1024
 #define RT_MAIN_THREAD_PRIORITY 10
 
 /* C++ features */
@@ -177,9 +177,9 @@
 #define RT_LWIP_TCP
 #define RT_LWIP_RAW
 #define RT_MEMP_NUM_NETCONN 8
-#define RT_LWIP_PBUF_NUM 16
+#define RT_LWIP_PBUF_NUM 8
 #define RT_LWIP_RAW_PCB_NUM 4
-#define RT_LWIP_UDP_PCB_NUM 4
+#define RT_LWIP_UDP_PCB_NUM 2
 #define RT_LWIP_TCP_PCB_NUM 4
 #define RT_LWIP_TCP_SEG_NUM 40
 #define RT_LWIP_TCP_SND_BUF 8196
@@ -223,6 +223,7 @@
 
 /* Select supported modules */
 
+#define WEBNET_USING_LOG
 #define WEBNET_USING_AUTH
 #define WEBNET_USING_CGI
 #define WEBNET_USING_ASP
@@ -251,6 +252,7 @@
 #define RW007_INT_BUSY_PIN 50
 #define RW007_RST_PIN 48
 #define PKG_USING_NETUTILS
+#define PKG_NETUTILS_TFTP
 #define PKG_NETUTILS_NTP
 #define NETUTILS_NTP_TIMEZONE 8
 #define NETUTILS_NTP_HOSTNAME "ntp.rt-thread.org"
@@ -306,6 +308,9 @@
 
 /* samples: kernel and components samples */
 
+#define PKG_USING_FILESYSTEM_SAMPLES
+#define PKG_USING_FILESYSTEM_SAMPLES_LATEST_VERSION
+#define FILESYSTEM_SAMPLES_USING_MKDIR
 #define SOC_FAMILY_STM32
 #define SOC_SERIES_STM32F4
 
